@@ -1,15 +1,13 @@
 package ru.hogwarts.school.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 @RestController
-@RequestMapping("student")
+@RequestMapping("/student")
 public class StudentController {
 
     private final StudentService studentService;
@@ -18,30 +16,28 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping("{id}")
-    public Student getStudentInfo(@PathVariable Long id) {
-        return studentService.findStudent(id);
-    }
-
     @PostMapping
-    public Student createStudent(@RequestBody Student student) {
-        return studentService.createStudent(student);
-    }
-
-    @PutMapping
-    public Student editStudent(@RequestBody Student student) {
-        return studentService.editStudent(student);
-    }
-
-    @DeleteMapping("{id}")
-    public Student deleteStudent(@PathVariable Long id) {
-        return studentService.deleteStudent(id);
+    public Student create(@RequestBody Student student) {
+        return studentService.add(student.getName(), student.getAge());
     }
 
     @GetMapping
-    public ResponseEntity<Collection<Student>> findStudents(@RequestParam(required = false) int age) {
-        if (age > 0) {
-        }
-        return ResponseEntity.ok(Collections.emptyList());
+    public Student get(@RequestParam Long id) {
+        return studentService.get(id);
+    }
+
+    @PutMapping
+    public Student update(@RequestBody Student student) {
+        return studentService.update(student.getId(), student.getName(), student.getAge());
+    }
+
+    @DeleteMapping
+    public Student delete(@RequestParam Long id) {
+        return studentService.delete(id);
+    }
+
+    @GetMapping("/by-age")
+    public List<Student> getByAge(@RequestParam int age) {
+        return studentService.getByAge(age);
     }
 }
