@@ -2,7 +2,11 @@ package ru.hogwarts.school.model;
 
 import java.util.Objects;
 
+
 public class Student {
+
+
+
     private long id;
     private String name;
     private int age;
@@ -12,6 +16,8 @@ public class Student {
         this.name = name;
         this.age = age;
     }
+
+
 
     public long getId() {
         return id;

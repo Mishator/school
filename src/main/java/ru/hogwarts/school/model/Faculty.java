@@ -1,8 +1,14 @@
 package ru.hogwarts.school.model;
 
+
 import java.util.Objects;
 
+
 public class Faculty {
+
+
+
+
 
     private long id;
     private String name;
@@ -13,6 +19,8 @@ public class Faculty {
         this.name = name;
         this.color = color;
     }
+
+
 
     public long getId() {
         return id;
