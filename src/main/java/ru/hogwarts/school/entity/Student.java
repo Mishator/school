@@ -1,5 +1,4 @@
-package ru.hogwarts.school.model;
-
+package ru.hogwarts.school.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,22 +7,22 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class Faculty {
+public class Student {
 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
-    private String color;
+    private int age;
 
-    public Faculty(long id, String name, String color) {
-        this.id = id;
+
+    public Student(String name, int age) {
         this.name = name;
-        this.color = color;
+        this.age = age;
     }
 
-    public Faculty() {
+    public Student() {
 
     }
 
@@ -32,45 +31,49 @@ public class Faculty {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getColor() {
-        return color;
+    public void setAge(int age) {
+        this.age = age;
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Faculty faculty = (Faculty) o;
-        return id == faculty.id && Objects.equals(name, faculty.name) && Objects.equals(color, faculty.color);
+        Student student = (Student) o;
+        return id == student.id && age == student.age && Objects.equals(name, student.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color);
+        return Objects.hash(id, name, age);
     }
 
     @Override
     public String toString() {
-        return "Faculty{" +
+        return "Student{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", color='" + color + '\'' +
+                ", age=" + age +
                 '}';
     }
+
+
 }
