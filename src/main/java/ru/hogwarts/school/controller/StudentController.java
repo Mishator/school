@@ -3,6 +3,7 @@ package ru.hogwarts.school.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.entity.Faculty;
 import ru.hogwarts.school.entity.Student;
 import ru.hogwarts.school.service.StudentService;
 
@@ -52,6 +53,12 @@ public class StudentController {
     public List<Student> getByAgeBetween(@RequestParam int min, @RequestParam int max) {
         return studentService.findByAgeBetween(min, max);
     }
+
+    @GetMapping("/faculty-by-id")
+    public Faculty getFaculty(@RequestParam long id) {
+        return studentService.getFaculty(id);
+    }
+
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {

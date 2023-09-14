@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.entity.Faculty;
+import ru.hogwarts.school.entity.Student;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.List;
@@ -50,6 +51,11 @@ public class FacultyController {
     @GetMapping("/by-color-or-name")
     public List<Faculty> getByColorOrName(@RequestParam String param) {
         return facultyService.getByColorOrName(param);
+    }
+
+    @GetMapping("/students-by-id")
+    public List<Student> getStudentsById(@RequestParam long id) {
+        return facultyService.getStudents(id);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

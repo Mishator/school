@@ -1,9 +1,6 @@
 package ru.hogwarts.school.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
@@ -21,6 +18,19 @@ public class Student {
         this.name = name;
         this.age = age;
     }
+
+    @ManyToOne
+    private Faculty faculty;
+
+    public Faculty getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
+    }
+
+
 
     public Student() {
 
