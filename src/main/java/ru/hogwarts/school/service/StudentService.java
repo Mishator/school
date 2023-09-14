@@ -57,4 +57,8 @@ public class StudentService {
         return studentRepository.findAllByAge(age);
     }
 
+    public List<Student> findByAgeBetween(int min, int max) {
+        return studentRepository.findByAgeBetween(min, max);
+    }
+
 }

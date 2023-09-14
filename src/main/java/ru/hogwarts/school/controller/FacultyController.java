@@ -47,6 +47,11 @@ public class FacultyController {
         return ResponseEntity.ok(facultiesByColor);
     }
 
+    @GetMapping("/by-color-or-name")
+    public List<Faculty> getByColorOrName(@RequestParam String param) {
+        return facultyService.getByColorOrName(param);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
