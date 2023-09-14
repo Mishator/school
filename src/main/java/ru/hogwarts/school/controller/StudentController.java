@@ -1,5 +1,7 @@
 package ru.hogwarts.school.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.entity.Student;
 import ru.hogwarts.school.service.StudentService;
@@ -17,27 +19,37 @@ public class StudentController {
     }
 
     @PostMapping
-    public Student create(@RequestBody Student student) {
-        return studentService.add(student.getName(),student.getAge());
+    public ResponseEntity<Student> create(@RequestBody Student student) {
+        Student createdStudent = studentService.add(student.getName(), student.getAge());
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdStudent);
     }
 
-    @GetMapping
-    public Student get(@RequestParam Long id) {
-        return studentService.get(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<Student> get(@PathVariable Long id) {
+        Student student = studentService.get(id);
+        return ResponseEntity.ok(student);
     }
 
-    @PutMapping
-    public Student update(@RequestBody Student student) {
-        return studentService.update(student.getId(), student.getName(),student.getAge());
+    @PutMapping("/{id}")
+    public ResponseEntity<Student> update(@PathVariable long id, @RequestBody Student student) {
+        Student updateStudent = studentService.update(id, student.getName(), student.getAge());
+        return ResponseEntity.ok(updateStudent);
     }
 
-    @DeleteMapping
-    public Student delete(@RequestParam Long id) {
-        return studentService.delete(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Student> delete(@PathVariable Long id) {
+        Student deletedStudent = studentService.delete(id);
+        return ResponseEntity.ok(deletedStudent);
     }
 
     @GetMapping("/by-age")
-    public List<Student> getByAge(@RequestParam int age) {
-        return studentService.getByAge(age);
+    public ResponseEntity<List<Student>> getByAge(@RequestParam int age) {
+        List<Student> studentsByAge = studentService.getByAge(age);
+        return ResponseEntity.ok(studentsByAge);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }

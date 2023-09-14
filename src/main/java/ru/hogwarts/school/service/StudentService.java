@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import ru.hogwarts.school.entity.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StudentService {
@@ -22,20 +22,35 @@ public class StudentService {
     }
 
     public Student get(long id) {
-        return studentRepository.findById(id).get();
+        Optional<Student> studentOptional = studentRepository.findById(id);
+        if (studentOptional.isPresent()) {
+            return studentOptional.get();
+        } else {
+            throw new IllegalArgumentException("Факультет с id " + id + " не найден");
+        }
     }
 
     public Student update(long id, String name, int age) {
-        Student studentForUpdate = studentRepository.findById(id).get();
-        studentForUpdate.setName(name);
-        studentForUpdate.setAge(age);
-        return studentRepository.save(studentForUpdate);
+        Optional<Student> studentOptional = studentRepository.findById(id);
+        if (studentOptional.isPresent()) {
+            Student studentForUpdate = studentOptional.get();
+            studentForUpdate.setName(name);
+            studentForUpdate.setAge(age);
+            return studentRepository.save(studentForUpdate);
+        } else {
+            throw new IllegalArgumentException("Факультет с id " + id + " не найден");
+        }
     }
 
     public Student delete(long id) {
-        Student studentForDelete = studentRepository.findById(id).get();
-        studentRepository.deleteById(id);
-        return studentForDelete;
+        Optional<Student> studentOptional = studentRepository.findById(id);
+        if (studentOptional.isPresent()) {
+            Student studentForDelete = studentOptional.get();
+            studentRepository.deleteById(id);
+            return studentForDelete;
+        } else {
+            throw new IllegalArgumentException("Факультет с id " + id + " не найден");
+        }
     }
 
     public List<Student> getByAge(int age) {

@@ -4,10 +4,8 @@ import org.springframework.stereotype.Service;
 import ru.hogwarts.school.entity.Faculty;
 import ru.hogwarts.school.repository.FacultyRepository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class FacultyService {
@@ -25,20 +23,35 @@ public class FacultyService {
     }
 
     public Faculty get(long id) {
-        return facultyRepository.findById(id).get();
+        Optional<Faculty> facultyOptional = facultyRepository.findById(id);
+        if (facultyOptional.isPresent()) {
+            return facultyOptional.get();
+        } else {
+            throw new IllegalArgumentException("Факультет с id " + id + " не найден");
+        }
     }
 
     public Faculty update(long id, String name, String color) {
-        Faculty facultyForUpdate = facultyRepository.findById(id).get();
-        facultyForUpdate.setName(name);
-        facultyForUpdate.setColor(color);
-        return facultyRepository.save(facultyForUpdate);
+        Optional<Faculty> facultyOptional = facultyRepository.findById(id);
+        if (facultyOptional.isPresent()) {
+            Faculty facultyForUpdate = facultyOptional.get();
+            facultyForUpdate.setName(name);
+            facultyForUpdate.setColor(color);
+            return facultyRepository.save(facultyForUpdate);
+        } else {
+            throw new IllegalArgumentException("Факультет с id " + id + " не найден");
+        }
     }
 
     public Faculty delete(long id) {
-        Faculty facultyForDelete = facultyRepository.findById(id).get();
-        facultyRepository.deleteById(id);
-        return facultyForDelete;
+        Optional<Faculty> facultyOptional = facultyRepository.findById(id);
+        if (facultyOptional.isPresent()) {
+            Faculty facultyForDelete = facultyOptional.get();
+            facultyRepository.deleteById(id);
+            return facultyForDelete;
+        } else {
+            throw new IllegalArgumentException("Факультет с id " + id + " не найден");
+        }
     }
 
     public List<Faculty> getByColor(String color) {
