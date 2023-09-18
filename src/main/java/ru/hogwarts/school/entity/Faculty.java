@@ -15,7 +15,7 @@ public class Faculty {
     private String name;
     private String color;
 
-    @OneToMany
+    @OneToMany(mappedBy = "faculty")
     private List<Student> students;
 
     public List<Student> getStudents() {
@@ -25,7 +25,6 @@ public class Faculty {
     public void setStudents(List<Student> students) {
         this.students = students;
     }
-
 
 
     public Faculty(String name, String color) {

@@ -20,6 +20,7 @@ public class Student {
     }
 
     @ManyToOne
+    @JoinColumn(name = "faculty_id")
     private Faculty faculty;
 
     public Faculty getFaculty() {
@@ -29,7 +30,6 @@ public class Student {
     public void setFaculty(Faculty faculty) {
         this.faculty = faculty;
     }
-
 
 
     public Student() {

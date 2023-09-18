@@ -63,7 +63,9 @@ public class StudentService {
     }
 
     public Faculty getFaculty(Long studentId) {
-        return studentRepository.findById(studentId).get().getFaculty();
+        return studentRepository.findById(studentId)
+                .map(Student::getFaculty)
+                .orElse(null);
     }
 
     public List<Student> findByFacultyId(long facultyId) {
