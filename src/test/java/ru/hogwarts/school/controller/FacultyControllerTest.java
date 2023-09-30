@@ -14,7 +14,6 @@ import ru.hogwarts.school.SchoolApplication;
 import ru.hogwarts.school.entity.Faculty;
 import ru.hogwarts.school.entity.Student;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -37,7 +36,7 @@ public class FacultyControllerTest {
 
     @Test
     void testCrudFaculty() {
-        Faculty faculty = new Faculty();
+        Faculty faculty = new Faculty( "Engineering", "Blue");
         faculty.setColor("red");
         faculty.setName("math");
 
@@ -63,7 +62,7 @@ public class FacultyControllerTest {
         assertThat(respBody.getColor()).isEqualTo("red");
 
         //update
-        faculty = new Faculty();
+        faculty = new Faculty( "Engineering", "Blue");
         faculty.setColor("red");
         faculty.setName("math");
 
@@ -84,17 +83,16 @@ public class FacultyControllerTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
-
-  //  @Test
+ //   @Test
   //  public void testDeleteFaculty() {
-  //      Faculty faculty = new Faculty("math", "red");
+   //     Faculty faculty = new Faculty("math", "red");
 
   //      template.delete(baseUrl, faculty, Faculty.class);
 
-  //      ResponseEntity<Faculty> response = template.exchange("/faculty/{id}", HttpMethod.DELETE, null, Faculty.class, 1L);
+   //     ResponseEntity<Faculty> response = template.exchange("/faculty/{id}", HttpMethod.DELETE, null, Faculty.class, 1L);
   //      assertEquals(HttpStatus.OK, response.getStatusCode());
   //      assertNotNull(response.getBody());
-  //      assertEquals("math", response.getBody().getName());
+   //     assertEquals("math", response.getBody().getName());
   //      assertEquals("red", response.getBody().getColor());
   //  }
 
