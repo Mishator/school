@@ -117,4 +117,19 @@ public class StudentController {
         }
     }
 
+    @GetMapping("/count")
+    public Integer count() {
+        return studentService.count();
+    }
+
+    @GetMapping("/age-avg")
+    public double getAvgAge() {
+        return studentService.findAvgAge();
+    }
+
+    @GetMapping("/find-last-five")
+    public List<Student> getLastFive() {
+        return studentService.findLastFiveStudents();
+    }
+
 }
