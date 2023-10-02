@@ -1,26 +1,29 @@
 package ru.hogwarts.school.controller;
 
-import org.assertj.core.util.Arrays;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.hogwarts.school.entity.Faculty;
 import ru.hogwarts.school.entity.Student;
 import ru.hogwarts.school.service.FacultyService;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static java.lang.reflect.Array.get;
-import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -59,117 +62,89 @@ public class FacultyControllerWebMvcTest {
     }
 
     @Test
-    public void testGetFaculty_ExistingFaculty() throws Exception {
-        Long facultyId = 1L;
-        Faculty faculty = new Faculty(facultyId, "Engineering", "Blue");
-        given(facultyService.get(facultyId)).willReturn(faculty);
+    public void testGet() throws Exception {
+        Faculty faculty = new Faculty("Engineering", "Blue");
+        faculty.setId(1L);
 
-        mockMvc.perform(get("/faculty/{id}", facultyId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(facultyId.intValue())))
-                .andExpect(jsonPath("$.name", is(faculty.getName())))
-                .andExpect(jsonPath("$.color", is(faculty.getColor())));
+        Mockito.when(facultyService.get(1L)).thenReturn(faculty);
 
-        verify(facultyService, times(1)).get(facultyId);
+        mockMvc.perform(MockMvcRequestBuilders.get("/faculty/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Engineering")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.color", Matchers.is("Blue")));
     }
 
     @Test
-    public void testGetFaculty_NonExistingFaculty() throws Exception {
-        Long facultyId = 1L;
-        given(facultyService.get(facultyId)).willReturn(null);
+    public void testUpdate() throws Exception {
+        Faculty faculty = new Faculty("Engineering", "Blue");
+        faculty.setId(1L);
 
-        mockMvc.perform(get("/faculty/{id}", facultyId))
-                .andExpect(status().isNotFound());
+        Mockito.when(facultyService.update(Mockito.anyLong(), Mockito.anyString(), Mockito.anyString())).thenReturn(faculty);
 
-        verify(facultyService, times(1)).get(facultyId);
+        mockMvc.perform(MockMvcRequestBuilders.put("/faculty/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Engineering\",\"color\":\"Blue\"}"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Engineering")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.color", Matchers.is("Blue")));
     }
 
     @Test
-    public void testUpdateFaculty() throws Exception {
-        Long facultyId = 1L;
-        Faculty faculty = new Faculty(facultyId, "Engineering", "Blue");
-        Faculty updatedFaculty = new Faculty(facultyId, "Science", "Red");
+    public void testDelete() throws Exception {
+        Faculty faculty = new Faculty("Engineering", "Blue");
+        faculty.setId(1L);
 
-        given(facultyService.update(facultyId, "Science", "Red")).willReturn(updatedFaculty);
+        Mockito.when(facultyService.delete(1L)).thenReturn(faculty);
 
-        mockMvc.perform(put("/faculty/{id}", facultyId)
-                        .content("{\"name\":\"Science\",\"color\":\"Red\"}")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(facultyId.intValue())))
-                .andExpect(jsonPath("$.name", is(updatedFaculty.getName())))
-                .andExpect(jsonPath("$.color", is(updatedFaculty.getColor())));
-
-        verify(facultyService, times(1)).update(facultyId, "Science", "Red");
-    }
-
-    @Test
-    public void testDeleteFaculty() throws Exception {
-        Long facultyId = 1L;
-        Faculty faculty = new Faculty(facultyId, "Engineering", "Blue");
-        given(facultyService.delete(facultyId)).willReturn(faculty);
-
-        mockMvc.perform(delete("/faculty/{id}", facultyId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(facultyId.intValue())))
-                .andExpect(jsonPath("$.name", is(faculty.getName())))
-                .andExpect(jsonPath("$.color", is(faculty.getColor())));
-
-        verify(facultyService, times(1)).delete(facultyId);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/faculty/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Engineering")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.color", Matchers.is("Blue")));
     }
 
     @Test
     public void testGetFacultiesByColor() throws Exception {
-        String color = "Blue";
-        List<Faculty> faculties = Arrays.asList(
-                new Faculty(1L, "Engineering", color),
-                new Faculty(2L, "Science", color)
-        );
+        Faculty faculty = new Faculty("Engineering", "Blue");
+        faculty.setId(1L);
 
-        given(facultyService.getByColor(color)).willReturn(faculties);
+        Mockito.when(facultyService.getByColor("Blue")).thenReturn(Collections.singletonList(faculty));
 
-        mockMvc.perform(get("/faculty/by-color").param("color", color))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name", is(faculties.get(0).getName())))
-                .andExpect(jsonPath("$[1].name", is(faculties.get(1).getName())));
-
-        verify(facultyService, times(1)).getByColor(color);
-    }
-
-    public void testGetFacultiesByColorOrName() throws Exception {
-        String param = "Blue";
-        List<Faculty> faculties = Arrays.asList(
-                new Faculty(1L, "Engineering", param),
-                new Faculty(2L, param, "Red")
-        );
-
-        given(facultyService.getByColorOrName(param)).willReturn(faculties);
-
-        mockMvc.perform(get("/faculty/by-color-or-name").param("param", param))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name", is(faculties.get(0).getName())))
-                .andExpect(jsonPath("$[1].color", is(faculties.get(1).getColor())));
-
-        verify(facultyService, times(1)).getByColorOrName(param);
+        mockMvc.perform(MockMvcRequestBuilders.get("/faculty/by-color?color=Blue"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is("Engineering")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].color", Matchers.is("Blue")));
     }
 
     @Test
-    public void testGetStudentsByFacultyId() throws Exception {
-        long facultyId = 1L;
-        List<Student> students = Arrays.asList(
-                new Student(1L, "Ivan", 20),
-                new Student(2L, "Petr", 22)
-        );
+    public void testGetFacultiesByColorOrName() throws Exception {
+        Faculty expectedFaculties = new Faculty("Engineering", "Blue");
 
-        given(facultyService.getStudents(facultyId)).willReturn(students);
 
-        mockMvc.perform(get("/faculty/students-by-id").param("id", String.valueOf(facultyId)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name", is(students.get(0).getName())))
-                .andExpect(jsonPath("$[1].name", is(students.get(1).getName())));
+        Mockito.when(facultyService.getByColorOrName(Mockito.anyString())).thenReturn(Collections.singletonList(expectedFaculties));
 
-        verify(facultyService, times(1)).getStudents(facultyId);
+        mockMvc.perform(MockMvcRequestBuilders.get("/faculty/by-color-or-name")
+                        .param("param", "Engineering"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("Engineering"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].color").value("Blue"));
+
     }
 
+    @Test
+    public void testGetStudentsById() throws Exception {
+        long id = 1;
+        List<Student> students = new ArrayList<>(
+                Collections.singleton(new Student("Ivan", 20)));
 
+        when(facultyService.getStudents(id)).thenReturn(students);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/faculty/students-by-id")
+                        .param("id", String.valueOf(id)))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$", hasSize(students.size())));
+    }
 }

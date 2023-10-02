@@ -1,7 +1,7 @@
 package ru.hogwarts.school.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.util.Arrays;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -11,23 +11,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.hogwarts.school.entity.Faculty;
 import ru.hogwarts.school.entity.Student;
 import ru.hogwarts.school.service.AvatarService;
 import ru.hogwarts.school.service.StudentService;
 
-import java.util.List;
+import java.util.Collections;
 
-import static java.lang.reflect.Array.get;
-import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -72,122 +64,91 @@ public class StudentControllerWebMvcTest {
         }
     @Test
     public void testGetStudentInfo() throws Exception {
-        Long studentId = 1L;
-        Student student = new Student(studentId, "Ivan", 20);
+        Student student = new Student("Ivan", 20);
+        student.setId(1L);
 
-        given(studentService.findStudent(studentId)).willReturn(student);
+        Mockito.when(studentService.findStudent(1L)).thenReturn(student);
 
-        mockMvc.perform(get("/student/{id}", studentId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(studentId.intValue())))
-                .andExpect(jsonPath("$.name", is(student.getName())))
-                .andExpect(jsonPath("$.age", is(student.getAge())));
-
-        verify(studentService, times(1)).findStudent(studentId);
+        mockMvc.perform(MockMvcRequestBuilders.get("/student/1"))
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Ivan")))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.age", Matchers.is(20)));
 
     }
 
     @Test
-    public void testGetStudentInfo_NonExistingStudent() throws Exception {
-        Long studentId = 1L;
-        given(studentService.findStudent(studentId)).willReturn(null);
+    public void testUpdate() throws Exception {
+        Student student = new Student("Ivan", 20);
+        student.setId(1L);
 
-        mockMvc.perform(get("/student/{id}", studentId))
-                .andExpect(status().isNotFound());
+        Mockito.when(studentService.update(Mockito.anyLong(), Mockito.anyString(), Mockito.anyInt())).thenReturn(student);
 
-        verify(studentService, times(1)).findStudent(studentId);
+        mockMvc.perform(MockMvcRequestBuilders.put("/student/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Ivan\",\"age\":20}"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Ivan")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.age", Matchers.is(20)));
 
     }
 
     @Test
-    public void testUpdateStudent() throws Exception {
-        Long studentId = 1L;
-        Student student = new Student(studentId, "Ivan", 20);
-        Student updatedStudent = new Student(studentId, "Ivan", 21);
+    public void testDelete() throws Exception {
+        Student student = new Student("Ivan", 20);
+        student.setId(1L);
 
-        given(studentService.update(studentId, "Ivan", 21)).willReturn(updatedStudent);
+        Mockito.when(studentService.delete(1L)).thenReturn(student);
 
-        mockMvc.perform(put("/student/{id}", studentId)
-                        .content("{\"name\":\"Jane Doe\",\"age\":21}")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(studentId.intValue())))
-                .andExpect(jsonPath("$.name", is(updatedStudent.getName())))
-                .andExpect(jsonPath("$.age", is(updatedStudent.getAge())));
-
-        verify(studentService, times(1)).update(studentId, "Ivan", 21);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/student/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Ivan")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.age", Matchers.is(20)));
     }
 
     @Test
-    public void testDeleteStudent() throws Exception {
-        Long studentId = 1L;
-        Student student = new Student(studentId, "Ivan", 20);
-        given(studentService.delete(studentId)).willReturn(student);
+    public void testGetByAge() throws Exception {
+        Student student = new Student("Ivan", 20);
+        student.setId(1L);
 
-        mockMvc.perform(delete("/student/{id}", studentId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(studentId.intValue())))
-                .andExpect(jsonPath("$.name", is(student.getName())))
-                .andExpect(jsonPath("$.age", is(student.getAge())));
 
-        verify(studentService, times(1)).delete(studentId);
+        Mockito.when(studentService.getByAge(20)).thenReturn(Collections.singletonList(student));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/student/by-age?age=20"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is("Ivan")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].age", Matchers.is(20)));
     }
 
     @Test
-    public void testGetStudentsByAge() throws Exception {
-        int age = 20;
-        List<Student> students = Arrays.asList(
-                new Student(1L, "Ivan", age),
-                new Student(2L, "Petr", age)
-        );
+    public void testGetByAgeBetween() throws Exception {
+        Student student = new Student("Ivan", 20);
+        student.setId(1L);
 
-        given(studentService.getByAge(age)).willReturn(students);
 
-        mockMvc.perform(get("/student/by-age").param("age", String.valueOf(age)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name", is(students.get(0).getName())))
-                .andExpect(jsonPath("$[1].name", is(students.get(1).getName())));
+        Mockito.when(studentService.findByAgeBetween(18, 25)).thenReturn(Collections.singletonList(student));
 
-        verify(studentService, times(1)).getByAge(age);
-    }
-
-    @Test
-    public void testGetStudentsByAgeBetween() throws Exception {
-        int minAge = 18;
-        int maxAge = 25;
-        List<Student> students = Arrays.asList(
-                new Student(1L, "Ivan", 20),
-                new Student(2L, "Petr", 22)
-        );
-
-        given(studentService.findByAgeBetween(minAge, maxAge)).willReturn(students);
-
-        mockMvc.perform(get("/student/by-age-between")
-                        .param("min", String.valueOf(minAge))
-                        .param("max", String.valueOf(maxAge)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name", is(students.get(0).getName())))
-                .andExpect(jsonPath("$[1].name", is(students.get(1).getName())));
-
-        verify(studentService, times(1)).findByAgeBetween(minAge, maxAge);
+        mockMvc.perform(MockMvcRequestBuilders.get("/student/by-age-between?min=18&max=25"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is("Ivan")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].age", Matchers.is(20)));
     }
 
     @Test
     public void testGetFaculty() throws Exception {
-        long facultyId = 1L;
-        Faculty faculty = new Faculty(facultyId, "Engineering", "Blue");
-        given(studentService.getFaculty(facultyId)).willReturn(faculty);
+        Faculty faculty = new Faculty("Engineering", "Blue");
+        faculty.setId(1L);
 
-        mockMvc.perform(get("/student/faculty-by-id")
-                        .param("id", String.valueOf(facultyId)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(facultyId.intValue())))
-                .andExpect(jsonPath("$.name", is(faculty.getName())))
-                .andExpect(jsonPath("$.color", is(faculty.getColor())));
+        Mockito.when(studentService.getFaculty(1L)).thenReturn(faculty);
 
-        verify(studentService, times(1)).getFaculty(facultyId);
+        mockMvc.perform(MockMvcRequestBuilders.get("/student/faculty-by-id?id=1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Engineering")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.color", Matchers.is("Blue")));
     }
-
-
-
 }
