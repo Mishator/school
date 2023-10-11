@@ -110,5 +110,12 @@ public class StudentService {
                 .collect(Collectors.toList());
     }
 
+    public double avgAge() {
+        return studentRepository.findAll().stream()
+                .mapToDouble(i -> (double) i.getAge())
+                .average()
+                .orElseThrow(() -> new RuntimeException("Ошибка вычисления среднего возраста"));
+    }
+
 
 }

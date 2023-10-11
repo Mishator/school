@@ -137,4 +137,9 @@ public class StudentController {
         return studentService.findAllStartFromA();
     }
 
+    @GetMapping("/avg-age")
+    public double avgAge() {
+        return studentService.avgAge();
+    }
+
 }
