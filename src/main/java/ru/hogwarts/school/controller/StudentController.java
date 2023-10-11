@@ -142,4 +142,9 @@ public class StudentController {
         return studentService.avgAge();
     }
 
+    @GetMapping("/calculate")
+    public int calculate() {
+        return studentService.calculate();
+    }
+
 }

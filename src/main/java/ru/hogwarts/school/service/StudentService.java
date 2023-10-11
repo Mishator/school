@@ -10,13 +10,14 @@ import ru.hogwarts.school.repository.StudentRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class StudentService {
 
     private final StudentRepository studentRepository;
 
-  //  private final Logger logger = LoggerFactory.getLogger(StudentService.class);
+    private final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
 
     public StudentService(StudentRepository studentRepository) {
@@ -116,6 +117,38 @@ public class StudentService {
                 .average()
                 .orElseThrow(() -> new RuntimeException("Ошибка вычисления среднего возраста"));
     }
+
+    public int calculate() {
+        long start = System.currentTimeMillis();
+         int result = Stream
+                 .iterate(1, a -> a +1)
+                 .limit(1_000_000)
+                 .parallel()
+                 .reduce(0, (a, b) -> a + b );
+        long finish = System.currentTimeMillis();
+        logger.info("Calculate time: " + (finish - start));
+        return result;
+    }
+
+    /*
+       2023-10-11 23:42:33.205  INFO 16576 --- [nio-8081-exec-8] r.h.school.service.StudentService
+
+       без parallel
+       Calculate time: 40
+       Calculate time: 29
+       Calculate time: 27
+       Calculate time: 31
+       Calculate time: 23
+
+       c parallel
+       Calculate time: 88
+       Calculate time: 32
+       Calculate time: 31
+       Calculate time: 35
+       Calculate time: 33
+
+
+    * */
 
 
 }
