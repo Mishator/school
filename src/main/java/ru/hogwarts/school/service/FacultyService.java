@@ -17,7 +17,7 @@ public class FacultyService {
 
     private final StudentService studentService;
 
-    private final Logger logger = LoggerFactory.getLogger(FacultyService.class);
+  //  private final Logger logger = LoggerFactory.getLogger(FacultyService.class);
 
     public FacultyService(FacultyRepository facultyRepository, StudentService studentService) {
         this.facultyRepository = facultyRepository;
@@ -26,13 +26,13 @@ public class FacultyService {
 
 
     public Faculty add(String name, String color) {
-        logger.info("Был вызван метод add");
+    //    logger.info("Был вызван метод add");
         Faculty newFaculty = new Faculty(name, color);
         return facultyRepository.save(newFaculty);
     }
 
     public Faculty get(long id) {
-        logger.info("Был вызван метод get");
+    //    logger.info("Был вызван метод get");
         Optional<Faculty> facultyOptional = facultyRepository.findById(id);
         if (facultyOptional.isPresent()) {
             return facultyOptional.get();
@@ -42,7 +42,7 @@ public class FacultyService {
     }
 
     public Faculty update(long id, String name, String color) {
-        logger.info("Был вызван метод update");
+    //    logger.info("Был вызван метод update");
         Optional<Faculty> facultyOptional = facultyRepository.findById(id);
         if (facultyOptional.isPresent()) {
             Faculty facultyForUpdate = facultyOptional.get();
@@ -55,7 +55,7 @@ public class FacultyService {
     }
 
     public Faculty delete(long id) {
-        logger.info("Был вызван метод delete");
+    //    logger.info("Был вызван метод delete");
         Optional<Faculty> facultyOptional = facultyRepository.findById(id);
         if (facultyOptional.isPresent()) {
             Faculty facultyForDelete = facultyOptional.get();
@@ -67,17 +67,17 @@ public class FacultyService {
     }
 
     public List<Faculty> getByColor(String color) {
-        logger.info("Был вызван метод getByColor");
+    //    logger.info("Был вызван метод getByColor");
         return facultyRepository.findAllByColor(color);
     }
 
     public List<Faculty> getByColorOrName(String param) {
-        logger.info("Был вызван метод getByColorOrName");
+    //    logger.info("Был вызван метод getByColorOrName");
         return facultyRepository.findByColorContainsIgnoreCaseOrNameContainsIgnoreCase(param, param);
     }
 
     public List<Student> getStudents(Long id) {
-        logger.info("Был вызван метод getStudents");
+    //    logger.info("Был вызван метод getStudents");
         return studentService.findByFacultyId(id);
     }
 

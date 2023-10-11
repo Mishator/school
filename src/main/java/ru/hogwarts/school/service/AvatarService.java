@@ -26,10 +26,11 @@ public class AvatarService {
     private final AvatarRepository avatarRepository;
     private Student student;
 
-    private final Logger logger = LoggerFactory.getLogger(AvatarService.class);
+  //  private final Logger logger = LoggerFactory.getLogger(AvatarService.class);
 
     public AvatarService(
-            @Value("${path.to.avatars.folder}") String avatarsDir,
+            @Value("${path.to.avatars.folder}")
+            String avatarsDir,
             StudentRepository studentRepository,
             AvatarRepository avatarRepository
     ) {
@@ -39,12 +40,12 @@ public class AvatarService {
     }
 
     public Avatar findAvatar(long studentId) {
-        logger.info("Был вызван метод findAvatar");
+    //    logger.info("Был вызван метод findAvatar");
         return avatarRepository.findByStudentId(studentId).orElseThrow();
     }
 
     public void uploadAvatar(Long facultyId, MultipartFile avatarFile) throws IOException {
-        logger.info("Был вызван метод uploadAvatar");
+    //    logger.info("Был вызван метод uploadAvatar");
         Student student = studentRepository.findById(facultyId).orElse(null);
 
         Path filePath = Path.of(avatarsDir, student + "." + getExtension(avatarFile.getOriginalFilename()));
@@ -73,12 +74,12 @@ public class AvatarService {
     }
 
     private Avatar getByStudentId(Long studentId) {
-        logger.info("Был вызван метод getByStudentId");
+    //    logger.info("Был вызван метод getByStudentId");
         return avatarRepository.findByStudentId(studentId).orElse(new Avatar());
     }
 
     private String getExtension(String fileName) {
-        logger.info("Был вызван метод getExtension");
+    //    logger.info("Был вызван метод getExtension");
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
 

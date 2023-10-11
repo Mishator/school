@@ -132,4 +132,9 @@ public class StudentController {
         return studentService.findLastFiveStudents();
     }
 
+    @GetMapping("name/start-from-a")
+    public List<String> startFromA() {
+        return studentService.findAllStartFromA();
+    }
+
 }
