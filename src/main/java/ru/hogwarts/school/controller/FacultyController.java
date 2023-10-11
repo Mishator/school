@@ -58,6 +58,11 @@ public class FacultyController {
         return facultyService.getStudents(id);
     }
 
+    @GetMapping("/longest-name")
+    public String longestName() {
+        return facultyService.longestName();
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
