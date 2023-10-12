@@ -19,19 +19,21 @@ public class StudentService {
 
     private final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
+    private final Object object = new Object();
+
 
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
 
     public Student add(String name, int age) {
-    //    logger.info("Был вызван метод add");
+        //    logger.info("Был вызван метод add");
         Student newStudent = new Student(name, age);
         return studentRepository.save(newStudent);
     }
 
     public Student findStudent(long id) {
-    //    logger.info("Был вызван метод findStudent");
+        //    logger.info("Был вызван метод findStudent");
         Optional<Student> studentOptional = studentRepository.findById(id);
         if (studentOptional.isPresent()) {
             return studentOptional.get();
@@ -41,7 +43,7 @@ public class StudentService {
     }
 
     public Student update(long id, String name, int age) {
-    //    logger.info("Был вызван метод update");
+        //    logger.info("Был вызван метод update");
         Optional<Student> studentOptional = studentRepository.findById(id);
         if (studentOptional.isPresent()) {
             Student studentForUpdate = studentOptional.get();
@@ -54,7 +56,7 @@ public class StudentService {
     }
 
     public Student delete(long id) {
-    //    logger.info("Был вызван метод delete");
+        //    logger.info("Был вызван метод delete");
         Optional<Student> studentOptional = studentRepository.findById(id);
         if (studentOptional.isPresent()) {
             Student studentForDelete = studentOptional.get();
@@ -66,39 +68,39 @@ public class StudentService {
     }
 
     public List<Student> getByAge(int age) {
-    //    logger.info("Был вызван метод getByAge");
+        //    logger.info("Был вызван метод getByAge");
         return studentRepository.findAllByAge(age);
     }
 
     public List<Student> findByAgeBetween(int min, int max) {
-    //    logger.info("Был вызван метод findByAgeBetween");
+        //    logger.info("Был вызван метод findByAgeBetween");
         return studentRepository.findByAgeBetween(min, max);
     }
 
     public Faculty getFaculty(Long studentId) {
-    //    logger.info("Был вызван метод getFaculty");
+        //    logger.info("Был вызван метод getFaculty");
         return studentRepository.findById(studentId)
                 .map(Student::getFaculty)
                 .orElse(null);
     }
 
     public List<Student> findByFacultyId(long facultyId) {
-    //    logger.info("Был вызван метод findByFacultyId");
+        //    logger.info("Был вызван метод findByFacultyId");
         return studentRepository.findByFacultyId(facultyId);
     }
 
     public Integer count() {
-    //    logger.info("Был вызван метод count");
+        //    logger.info("Был вызван метод count");
         return studentRepository.countStudent();
     }
 
     public double findAvgAge() {
-    //    logger.info("Был вызван метод findAvgAge");
+        //    logger.info("Был вызван метод findAvgAge");
         return studentRepository.findAvgAge();
     }
 
     public List<Student> findLastFiveStudents() {
-    //    logger.info("Был вызван метод findLastFiveStudents");
+        //    logger.info("Был вызван метод findLastFiveStudents");
         return studentRepository.findLastStudents(5);
     }
 
@@ -120,11 +122,11 @@ public class StudentService {
 
     public int calculate() {
         long start = System.currentTimeMillis();
-         int result = Stream
-                 .iterate(1, a -> a +1)
-                 .limit(1_000_000)
-                 .parallel()
-                 .reduce(0, (a, b) -> a + b );
+        int result = Stream
+                .iterate(1, a -> a + 1)
+                .limit(1_000_000)
+                .parallel()
+                .reduce(0, (a, b) -> a + b);
         long finish = System.currentTimeMillis();
         logger.info("Calculate time: " + (finish - start));
         return result;
@@ -149,6 +151,52 @@ public class StudentService {
 
 
     * */
+
+    public void printStudentsName() {
+        List<Student> students = studentRepository.findAll();
+        printStudentName(students.get(0));
+        printStudentName(students.get(1));
+
+        new Thread(() -> {
+            printStudentName(students.get(2));
+            printStudentName(students.get(3));
+        }).start();
+
+        new Thread(() -> {
+            printStudentName(students.get(4));
+            printStudentName(students.get(5));
+        }).start();
+
+    }
+
+
+    private void printStudentName(Student student) {
+        System.out.println(Thread.currentThread() + " " + student);
+    }
+
+    public void printStudentsNameSync() {
+        List<Student> students = studentRepository.findAll();
+        printStudentNameSync(students.get(0));
+        printStudentNameSync(students.get(1));
+
+        new Thread(() -> {
+            printStudentNameSync(students.get(2));
+            printStudentNameSync(students.get(3));
+        }).start();
+
+        new Thread(() -> {
+            printStudentNameSync(students.get(4));
+            printStudentNameSync(students.get(5));
+        }).start();
+
+    }
+
+    private void printStudentNameSync(Student student) {
+        synchronized (object) {
+            System.out.println(Thread.currentThread() + " " + student);
+        }
+
+    }
 
 
 }

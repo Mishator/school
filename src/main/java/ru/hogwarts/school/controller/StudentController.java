@@ -147,4 +147,13 @@ public class StudentController {
         return studentService.calculate();
     }
 
+    @GetMapping("/print-names")
+    public void printNames() {
+        studentService.printStudentsName();
+    }
+
+    @GetMapping("/print-names-sync")
+    public void printNamesSync() {
+        studentService.printStudentsNameSync();
+    }
 }
